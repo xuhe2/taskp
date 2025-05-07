@@ -5,11 +5,15 @@ import (
 	"sync"
 )
 
-var globalVar = map[string]any{}
-var globalVarMapMutex = sync.RWMutex{}
+var (
+	globalVar         = map[string]any{}
+	globalVarMapMutex = sync.RWMutex{}
+)
 
-var ErrVarNotExist = errors.New("variable not exist")
-var ErrVarTypeNotMatch = errors.New("variable type not match")
+var (
+	ErrVarNotExist     = errors.New("variable not exist")
+	ErrVarTypeNotMatch = errors.New("variable type not match")
+)
 
 func SetGlobalVar[T any](key string, value T) {
 	globalVarMapMutex.Lock()
