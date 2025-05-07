@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -56,8 +57,11 @@ func main() {
 }
 
 func init() {
+	numOfWorkers := flag.Int("num_workers", 1, "number of workers")
+	flag.Parse()
+
 	initDatabase()
-	initWorkers(1)
+	initWorkers(*numOfWorkers)
 }
 
 func initDatabase() {
