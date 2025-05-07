@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "./netapi";
+
+package main;
+
+message BaseInfo {
+    string wd = 1;
+}
+
+message Task {
+    BaseInfo info = 1;
+    string name = 2;
+    string command = 3;
+}
+
+message TaskResponse {
+    string message = 1;
+}
+
+service TaskService {
+    rpc CommitTask (Task) returns (TaskResponse);
+}
