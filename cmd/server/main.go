@@ -23,16 +23,29 @@ type TaskServer struct {
 }
 
 func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.Task) (*netapi.TaskResponse, error) {
-	// async run task
-	newTask := task.NewTask(in.Name, in.Info.Wd, in.Command)
-
-	taskRecord := newTask.ToTaskRecord()
-
 	databse, err := gvm.GetGlobalVar[*db.Database]("db")
 	if err != nil {
 		return nil, err
 	}
-	databse.Create(taskRecord)
+
+	// create task record when commit
+	createTaskRecordWhenCommitFunc := func(t *task.Task) {
+		databse.Create(t.ToTaskRecord())
+	}
+
+	// update task record
+	// when task is running or finished
+	updateTaskRecordFunc := func(t *task.Task) {
+		databse.Save(t.ToTaskRecord())
+	}
+
+	// create a task
+	newTask := task.NewTask(in.Name, in.Info.Wd, in.Command).
+		WithBeforeRunFunc(updateTaskRecordFunc).
+		WithAfterRunFunc(updateTaskRecordFunc)
+
+	// save task record to db
+	createTaskRecordWhenCommitFunc(newTask)
 
 	taskChan, err := gvm.GetGlobalVar[chan *task.Task]("taskChan")
 	if err != nil {
