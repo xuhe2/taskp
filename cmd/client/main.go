@@ -36,8 +36,19 @@ func main() {
 	command := flag.String("cmd", "echo 'empty'", "command to execute")
 	flag.Parse()
 
-	res, err := c.CommitTask(context.Background(), &netapi.CommitTaskReq{
-		Task: &netapi.Task{Info: NewBaseInfo(), Name: *taskName, Command: *command},
+	// get first sub command
+	mainCmd := flag.Arg(0)
+	switch mainCmd {
+	case "commit":
+		handleCommitTaskCmd(c, *taskName, *command)
+	default:
+		panic("unknown command")
+	}
+}
+
+func handleCommitTaskCmd(client netapi.TaskServiceClient, name, cmd string) {
+	res, err := client.CommitTask(context.Background(), &netapi.CommitTaskReq{
+		Task: &netapi.Task{Info: NewBaseInfo(), Name: name, Command: cmd},
 	})
 	if err != nil {
 		panic(err)
