@@ -86,7 +86,7 @@ func initDatabase() {
 func initWorkers(num int) {
 	taskChan := make(chan *task.Task, 1_000)
 	gvm.SetGlobalVar("taskChan", taskChan)
-	for i := 0; i < num; i++ {
+	for i := range num {
 		worker := task.NewWorker(i, taskChan)
 		go worker.Run()
 	}
