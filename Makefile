@@ -1,10 +1,10 @@
-ServerFile = ./cmd/server/main.go
-ClientFile = ./cmd/client/main.go
+ServerDir = ./cmd/server/
+ClientDir = ./cmd/client/
 
 .PHONY: build
 build:
-	go build -o ./bin/server ${ServerFile}
-	go build -o ./bin/client ${ClientFile}
+	go build -o ./bin/server ${ServerDir}
+	go build -o ./bin/client ${ClientDir}
 
 .PHONY: clean
 clean:
