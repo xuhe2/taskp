@@ -50,12 +50,14 @@ func NewTask(name, wd, command string) *Task {
 	}
 }
 
-func (t *Task) WithBeforeRunFunc(f func(*Task)) {
+func (t *Task) WithBeforeRunFunc(f func(*Task)) *Task {
 	t.BeforeRun = append(t.BeforeRun, f)
+	return t
 }
 
-func (t *Task) WithAfterRunFunc(f func(*Task)) {
+func (t *Task) WithAfterRunFunc(f func(*Task)) *Task {
 	t.AfterRun = append(t.AfterRun, f)
+	return t
 }
 
 func (t *Task) Run() {
