@@ -36,7 +36,9 @@ func main() {
 	command := flag.String("cmd", "echo 'empty'", "command to execute")
 	flag.Parse()
 
-	res, err := c.CommitTask(context.Background(), &netapi.Task{Info: NewBaseInfo(), Name: *taskName, Command: *command})
+	res, err := c.CommitTask(context.Background(), &netapi.CommitTaskReq{
+		Task: &netapi.Task{Info: NewBaseInfo(), Name: *taskName, Command: *command},
+	})
 	if err != nil {
 		panic(err)
 	}

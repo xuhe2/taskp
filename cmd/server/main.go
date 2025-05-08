@@ -22,7 +22,7 @@ type TaskServer struct {
 	netapi.UnimplementedTaskServiceServer
 }
 
-func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.Task) (*netapi.TaskResponse, error) {
+func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.CommitTaskReq) (*netapi.CommitTaskResp, error) {
 	databse, err := gvm.GetGlobalVar[*db.Database]("db")
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.Task) (*netapi.T
 	}
 
 	// create a task
-	newTask := task.NewTask(in.Name, in.Info.Wd, in.Command).
+	newTask := task.NewTask(in.Task.Name, in.Task.Info.Wd, in.Task.Command).
 		WithBeforeRunFunc(updateTaskRecordFunc).
 		WithAfterRunFunc(updateTaskRecordFunc)
 
@@ -53,7 +53,7 @@ func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.Task) (*netapi.T
 	}
 	taskChan <- newTask
 
-	return &netapi.TaskResponse{Message: "ok"}, nil
+	return &netapi.CommitTaskResp{Message: fmt.Sprintf("task %s is commited", in.Task.Name)}, nil
 }
 
 func main() {

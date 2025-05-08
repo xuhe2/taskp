@@ -14,10 +14,14 @@ message Task {
     string command = 3;
 }
 
-message TaskResponse {
+message CommitTaskReq {
+    Task task = 1;
+}
+
+message CommitTaskResp {
     string message = 1;
 }
 
 service TaskService {
-    rpc CommitTask (Task) returns (TaskResponse);
+    rpc CommitTask (CommitTaskReq) returns (CommitTaskResp);
 }

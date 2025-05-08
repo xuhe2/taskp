@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TaskServiceClient interface {
-	CommitTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*TaskResponse, error)
+	CommitTask(ctx context.Context, in *CommitTaskReq, opts ...grpc.CallOption) (*CommitTaskResp, error)
 }
 
 type taskServiceClient struct {
@@ -37,9 +37,9 @@ func NewTaskServiceClient(cc grpc.ClientConnInterface) TaskServiceClient {
 	return &taskServiceClient{cc}
 }
 
-func (c *taskServiceClient) CommitTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*TaskResponse, error) {
+func (c *taskServiceClient) CommitTask(ctx context.Context, in *CommitTaskReq, opts ...grpc.CallOption) (*CommitTaskResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TaskResponse)
+	out := new(CommitTaskResp)
 	err := c.cc.Invoke(ctx, TaskService_CommitTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *taskServiceClient) CommitTask(ctx context.Context, in *Task, opts ...gr
 // All implementations must embed UnimplementedTaskServiceServer
 // for forward compatibility.
 type TaskServiceServer interface {
-	CommitTask(context.Context, *Task) (*TaskResponse, error)
+	CommitTask(context.Context, *CommitTaskReq) (*CommitTaskResp, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -62,7 +62,7 @@ type TaskServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTaskServiceServer struct{}
 
-func (UnimplementedTaskServiceServer) CommitTask(context.Context, *Task) (*TaskResponse, error) {
+func (UnimplementedTaskServiceServer) CommitTask(context.Context, *CommitTaskReq) (*CommitTaskResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitTask not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
@@ -87,7 +87,7 @@ func RegisterTaskServiceServer(s grpc.ServiceRegistrar, srv TaskServiceServer) {
 }
 
 func _TaskService_CommitTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Task)
+	in := new(CommitTaskReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func _TaskService_CommitTask_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: TaskService_CommitTask_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceServer).CommitTask(ctx, req.(*Task))
+		return srv.(TaskServiceServer).CommitTask(ctx, req.(*CommitTaskReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
