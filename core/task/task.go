@@ -32,6 +32,9 @@ type Task struct {
 	LogFile io.Writer
 
 	Record *db.TaskRecord
+
+	BeforeRun []func(*Task)
+	AfterRun  []func(*Task)
 }
 
 func NewTask(name, wd, command string) *Task {
@@ -42,7 +45,17 @@ func NewTask(name, wd, command string) *Task {
 		Priority:   0,
 		Status:     Status_Pending,
 		Record:     nil,
+		BeforeRun:  []func(*Task){},
+		AfterRun:   []func(*Task){},
 	}
+}
+
+func (t *Task) WithBeforeRunFunc(f func(*Task)) {
+	t.BeforeRun = append(t.BeforeRun, f)
+}
+
+func (t *Task) WithAfterRunFunc(f func(*Task)) {
+	t.AfterRun = append(t.AfterRun, f)
 }
 
 func (t *Task) Run() {
@@ -61,11 +74,21 @@ func (t *Task) Run() {
 		cmd.Stderr = t.LogFile
 	}
 
+	// run the before run functions
+	for _, f := range t.BeforeRun {
+		f(t)
+	}
+
 	slog.Info(fmt.Sprintf("Task `%s` started", t.Name))
 	t.StartTime = time.Now() // record the start time
 	err := cmd.Run()         // run the command
 	defer func() {           // record the stop time
 		t.StopTime = time.Now()
+
+		// run the after run functions
+		for _, f := range t.AfterRun {
+			f(t)
+		}
 	}()
 
 	if err != nil {
