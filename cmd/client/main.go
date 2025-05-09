@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/xuhe2/taskp/netapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,7 +33,8 @@ func main() {
 
 	c := netapi.NewTaskServiceClient(conn)
 
-	taskName := flag.String("name", "<empty name>", "task name")
+	taskID := flag.Uint64("taskid", 0, "task id")
+	taskName := flag.String("name", "", "task name")
 	command := flag.String("cmd", "echo 'empty'", "command to execute")
 	flag.Parse()
 
@@ -41,6 +43,8 @@ func main() {
 	switch mainCmd {
 	case "commit":
 		handleCommitTaskCmd(c, *taskName, *command)
+	case "list":
+		handleListTaskCmd(c, *taskID, *taskName)
 	default:
 		panic("unknown command")
 	}
@@ -54,4 +58,20 @@ func handleCommitTaskCmd(client netapi.TaskServiceClient, name, cmd string) {
 		panic(err)
 	}
 	fmt.Println(res.GetMessage())
+}
+
+func handleListTaskCmd(client netapi.TaskServiceClient, taskID uint64, taskName string) {
+	res, err := client.GetTask(context.Background(), &netapi.GetTaskReq{TaskId: taskID, Name: taskName})
+	if err != nil {
+		panic(err)
+	}
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"ID", "Task Name", "Status"})
+	for _, task := range res.Tasks {
+		t.AppendRow(table.Row{task.Id, task.Name, task.Status})
+		t.AppendSeparator()
+	}
+	t.Render()
 }
