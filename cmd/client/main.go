@@ -70,7 +70,7 @@ func handleListTaskCmd(client netapi.TaskServiceClient, taskID uint64, taskName 
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"ID", "Task Name", "Status"})
 	for _, task := range res.Tasks {
-		t.AppendRow(table.Row{"", task.Name, ""})
+		t.AppendRow(table.Row{task.Id, task.Name, task.Status})
 		t.AppendSeparator()
 	}
 	t.Render()
