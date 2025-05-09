@@ -79,8 +79,13 @@ func (s *TaskServer) GetTask(ctx context.Context, in *netapi.GetTaskReq) (*netap
 	var tasks []*netapi.Task
 	for _, taskRecord := range taskRecords {
 		tasks = append(tasks, &netapi.Task{
-			Name:    taskRecord.Name,
-			Command: taskRecord.Command,
+			Id:         uint64(taskRecord.ID),
+			Name:       taskRecord.Name,
+			Command:    taskRecord.Command,
+			Status:     taskRecord.Status,
+			CommitTime: taskRecord.CreatedAt.String(),
+			StartTime:  taskRecord.StartTime.String(),
+			StopTime:   taskRecord.StopTime.String(),
 		})
 	}
 
