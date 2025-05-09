@@ -70,7 +70,7 @@ func (s *TaskServer) GetTask(ctx context.Context, in *netapi.GetTaskReq) (*netap
 	// default query all tasks
 	// limit 10 tasks, order by `createdAt` field
 	if tx == nil {
-		tx = databse.Limit(10).Order("created_at desc")
+		tx = databse.Limit(5).Order("created_at desc")
 	}
 
 	var taskRecords []*db.TaskRecord
