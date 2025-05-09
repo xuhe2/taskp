@@ -4,6 +4,11 @@ option go_package = "./netapi";
 
 package main;
 
+service TaskService {
+    rpc CommitTask (CommitTaskReq) returns (CommitTaskResp);
+    rpc GetTask (GetTaskReq) returns (GetTaskResp);
+}
+
 message BaseInfo {
     string wd = 1;
 }
@@ -22,6 +27,12 @@ message CommitTaskResp {
     string message = 1;
 }
 
-service TaskService {
-    rpc CommitTask (CommitTaskReq) returns (CommitTaskResp);
+message GetTaskReq {
+    BaseInfo info = 1;
+    string name = 2;
+    uint64 taskId = 3;
+}
+
+message GetTaskResp {
+    repeated Task tasks = 1;
 }
