@@ -17,6 +17,14 @@ message Task {
     BaseInfo info = 1;
     string name = 2;
     string command = 3;
+
+    uint64 id = 4;
+
+    string status = 5;
+
+    string commitTime = 6;
+    string startTime = 7;
+    string stopTime = 8;
 }
 
 message CommitTaskReq {
