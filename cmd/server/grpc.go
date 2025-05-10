@@ -7,6 +7,7 @@ import (
 	"github.com/xuhe2/taskp/core/db"
 	"github.com/xuhe2/taskp/core/gvm"
 	"github.com/xuhe2/taskp/core/task"
+	"github.com/xuhe2/taskp/core/utils"
 	"github.com/xuhe2/taskp/netapi"
 	"gorm.io/gorm"
 )
@@ -24,6 +25,10 @@ func (s *TaskServer) CommitTask(ctx context.Context, in *netapi.CommitTaskReq) (
 	// create task record when commit
 	createTaskRecordWhenCommitFunc := func(t *task.Task) {
 		databse.Create(t.ToTaskRecord())
+		// create log file from task info before commit task
+		// the id will be updated when task record is created
+		t.WithLogFile(utils.GenLogFile(t.ToTaskRecord().ID))
+		databse.Save(t.ToTaskRecord()) // update log file path
 	}
 
 	// update task record
