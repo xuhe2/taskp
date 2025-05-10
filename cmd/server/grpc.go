@@ -83,9 +83,9 @@ func (s *TaskServer) GetTask(ctx context.Context, in *netapi.GetTaskReq) (*netap
 			Name:       taskRecord.Name,
 			Command:    taskRecord.Command,
 			Status:     taskRecord.Status,
-			CommitTime: taskRecord.CreatedAt.String(),
-			StartTime:  taskRecord.StartTime.String(),
-			StopTime:   taskRecord.StopTime.String(),
+			CommitTime: taskRecord.CreatedAt.Format("2006-01-02 15:04:05"),
+			StartTime:  taskRecord.StartTime.Format("2006-01-02 15:04:05"),
+			StopTime:   taskRecord.StopTime.Format("2006-01-02 15:04:05"),
 		})
 	}
 
