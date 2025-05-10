@@ -2,7 +2,6 @@ package task
 
 import (
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -29,7 +28,7 @@ type Task struct {
 	StartTime time.Time
 	StopTime  time.Time
 
-	LogFile io.Writer
+	LogFile *os.File
 
 	Record *db.TaskRecord
 
@@ -48,6 +47,11 @@ func NewTask(name, wd, command string) *Task {
 		BeforeRun:  []func(*Task){},
 		AfterRun:   []func(*Task){},
 	}
+}
+
+func (t *Task) WithLogFile(file *os.File) *Task {
+	t.LogFile = file
+	return t
 }
 
 func (t *Task) WithBeforeRunFunc(f func(*Task)) *Task {
@@ -116,6 +120,12 @@ func (t *Task) ToTaskRecord() *db.TaskRecord {
 
 	taskRecord.StartTime = t.StartTime
 	taskRecord.StopTime = t.StopTime
+
+	// get log file path from *os.File
+	// the log file is created by using full file path(this is file.Name())
+	if t.LogFile != nil {
+		taskRecord.LogFile = t.LogFile.Name()
+	}
 
 	// store task record in field
 	t.Record = taskRecord
